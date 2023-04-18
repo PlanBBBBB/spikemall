@@ -1,0 +1,8 @@
+# 项目排除路径
+/defray-service/target/
+/gateway-service/target/
+/goods-service/target/
+/order-service/target/
+/purchase-service/target/
+/stock-service/target/
+/user-service/target/
