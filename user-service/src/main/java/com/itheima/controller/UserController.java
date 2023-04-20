@@ -21,6 +21,17 @@ public class UserController {
 
 
     /**
+     * 注册
+     *
+     * @param user
+     * @return
+     */
+    @PostMapping("/register")
+    public Result register(@RequestBody Users user) {
+        return usersService.register(user);
+    }
+
+    /**
      * 登录
      *
      * @param user

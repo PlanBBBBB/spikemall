@@ -19,4 +19,6 @@ public interface UsersService extends IService<Users> {
     Result check(String token);
 
     Result logout(String token);
+
+    Result register(Users user);
 }
