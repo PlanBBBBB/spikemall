@@ -38,25 +38,15 @@ public class OrdersServiceImpl extends ServiceImpl<OrdersMapper, Orders> impleme
     private RocketMQTemplate rocketMQTemplate;
 
     @Override
-    public int findCount(String token, Long goodsId) {
-        String tokenKey = "login:user" + token;
-        String userJson = stringRedisTemplate.opsForValue().get(tokenKey);
-        Users user = JSONUtil.toBean(userJson, Users.class);
-
-        Long userId = user.getId();
+    public int findCount(Long userId, Long goodsId) {
         LambdaQueryWrapper<Orders> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.eq(Orders::getGoodId, goodsId).eq(Orders::getUserId, userId);
         return count(queryWrapper);
     }
 
     @Override
-    public void saveOrder(String token, Long goodsId, Long orderId) {
-        String tokenKey = "login:user" + token;
-        String userJson = stringRedisTemplate.opsForValue().get(tokenKey);
-        Users user = JSONUtil.toBean(userJson, Users.class);
-
+    public void saveOrder(Long userId, Long goodsId, Long orderId) {
         Long price = goodClient.getPrice(goodsId);
-        Long userId = user.getId();
 
         //创建订单
         Orders order = new Orders();
@@ -78,12 +68,7 @@ public class OrdersServiceImpl extends ServiceImpl<OrdersMapper, Orders> impleme
     }
 
     @Override
-    public Result listByUser(String token) {
-        String tokenKey = "login:user" + token;
-        String userJson = stringRedisTemplate.opsForValue().get(tokenKey);
-        Users user = JSONUtil.toBean(userJson, Users.class);
-        Long userId = user.getId();
-
+    public Result listByUser(Long userId) {
         LambdaQueryWrapper<Orders> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.eq(Orders::getUserId, userId);
         List<Orders> ordersList = list(queryWrapper);

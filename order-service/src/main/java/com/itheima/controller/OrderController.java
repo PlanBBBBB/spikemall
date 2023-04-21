@@ -26,9 +26,9 @@ public class OrderController {
      * @param goodsId
      * @return
      */
-    @GetMapping("/find/{token}/{id}")
-    public int findCount(@PathVariable("token") String token, @PathVariable("id") Long goodsId) {
-        return ordersService.findCount(token, goodsId);
+    @GetMapping("/find/{userId}/{goodsId}")
+    public int findCount(@PathVariable("userId") Long userId, @PathVariable("goodsId") Long goodsId) {
+        return ordersService.findCount(userId, goodsId);
     }
 
 
@@ -39,8 +39,8 @@ public class OrderController {
      */
     @GetMapping("/list")
     public Result list(HttpServletRequest request) {
-        String token = UserToken.getToken(request);
-        return ordersService.listByUser(token);
+        Long userId = UserToken.getToken(request);
+        return ordersService.listByUser(userId);
     }
 
 }

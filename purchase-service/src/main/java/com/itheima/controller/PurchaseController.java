@@ -28,8 +28,8 @@ public class PurchaseController {
      */
     @PostMapping("/spike/{id}")
     public Result spikeGoods(HttpServletRequest request, @PathVariable("id") Long goodsId) {
-        String token = UserToken.getToken(request);
-        return repertoryService.spikeGoods(token, goodsId);
+        Long userId = UserToken.getToken(request);
+        return repertoryService.spikeGoods(userId, goodsId);
     }
 
 }

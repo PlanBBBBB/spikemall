@@ -44,7 +44,7 @@ public class RepertoryServiceImpl extends ServiceImpl<RepertoryMapper, Repertory
     private RedisIdWorker redisIdWorker;
 
     @Override
-    public Result spikeGoods(String token, Long goodsId) {
+    public Result spikeGoods(Long userId, Long goodsId) {
         //判断是否满足时间、库存条件
         Repertory spikeGood = getById(goodsId);
         LocalDateTime beginTime = spikeGood.getBeginTime();
@@ -61,13 +61,7 @@ public class RepertoryServiceImpl extends ServiceImpl<RepertoryMapper, Repertory
             return Result.fail("库存不足");
         }
 
-        //获取存在redis中的user
-        String tokenKey = "login:user" + token;
-        String userJson = stringRedisTemplate.opsForValue().get(tokenKey);
-        Users user = JSONUtil.toBean(userJson, Users.class);
-
         //根据userId 创建锁对象
-        Long userId = user.getId();
         SimpleRedisLock redisLock = new SimpleRedisLock("order:" + userId, stringRedisTemplate);
         // 获取锁对象
         boolean isLock = redisLock.tryLock(120);
@@ -78,7 +72,7 @@ public class RepertoryServiceImpl extends ServiceImpl<RepertoryMapper, Repertory
         try {
             // 获取代理对象
             RepertoryService proxy = (RepertoryService) AopContext.currentProxy();
-            return proxy.createVoucherOrder(token,goodsId);
+            return proxy.createVoucherOrder(userId,goodsId);
         } finally {
             // 释放锁
             redisLock.unlock();
@@ -87,9 +81,9 @@ public class RepertoryServiceImpl extends ServiceImpl<RepertoryMapper, Repertory
 
     @Override
     @Transactional
-    public Result createVoucherOrder(String token,Long goodsId) {
+    public Result createVoucherOrder(Long userId,Long goodsId) {
         //一人一单要求
-        int count = orderClient.findCount(token, goodsId);
+        int count = orderClient.findCount(userId, goodsId);
         if (count > 0) {
             return Result.fail("该用户以抢购此商品");
         }
@@ -105,7 +99,7 @@ public class RepertoryServiceImpl extends ServiceImpl<RepertoryMapper, Repertory
 
         //发送普通消息给MQ
         String topic = "Order";
-        String message = token + "_" + goodsId + "_" + orderId;
+        String message = userId + "_" + goodsId + "_" + orderId;
         rocketMQTemplate.convertAndSend(topic, message);
 
         //返回订单id

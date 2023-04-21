@@ -4,12 +4,10 @@ package com.itheima.controller;
 import com.itheima.common.Result;
 import com.itheima.entity.Users;
 import com.itheima.service.UsersService;
-import com.itheima.utils.UserToken;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
-import javax.servlet.http.HttpServletRequest;
 
 @RestController
 @RequestMapping("/user")
@@ -18,6 +16,8 @@ public class UserController {
 
     @Resource
     private UsersService usersService;
+
+    //TODO 超级管理员有的权限功能
 
 
     /**
@@ -44,25 +44,13 @@ public class UserController {
 
 
     /**
-     * 校验
-     *
-     * @return
-     */
-    @GetMapping("/check")
-    public Result check(HttpServletRequest request) {
-        String token = UserToken.getToken(request);
-        return usersService.check(token);
-    }
-
-    /**
      * 登出
      *
      * @return
      */
     @PostMapping("/logout")
-    public Result logout(HttpServletRequest request) {
-        String token = UserToken.getToken(request);
-        return usersService.logout(token);
+    public Result logout() {
+        return usersService.logout();
     }
 
     /**
@@ -70,9 +58,9 @@ public class UserController {
      *
      * @return
      */
-    @GetMapping("/money/{token}")
-    public Long getMoney(@PathVariable("token") String token) {
-        return usersService.getMoney(token);
+    @GetMapping("/money/{userId}")
+    public Long getMoney(@PathVariable("userId") Long userId) {
+        return usersService.getMoney(userId);
     }
 
     /**
@@ -80,9 +68,9 @@ public class UserController {
      *
      * @param lastMoney
      */
-    @GetMapping("/reduce/{token}/{id}")
-    public void reduceMoney(@PathVariable("token") String token, @PathVariable("id") Long lastMoney) {
-        usersService.reduceMoney(token, lastMoney);
+    @GetMapping("/reduce/{userId}/{lastMoney}")
+    public void reduceMoney(@PathVariable("userId") Long userId, @PathVariable("lastMoney") Long lastMoney) {
+        usersService.reduceMoney(userId, lastMoney);
     }
 
 }

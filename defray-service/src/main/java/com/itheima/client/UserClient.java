@@ -8,10 +8,10 @@ import org.springframework.web.bind.annotation.PathVariable;
 @FeignClient("userservice")
 public interface UserClient {
 
-    @GetMapping("/user/money/{token}")
-    Long getMoney(@PathVariable("token") String token);
+    @GetMapping("/user/money/{userId}")
+    Long getMoney(@PathVariable("userId") Long userId);
 
-    @GetMapping("/user/reduce/{token}/{id}")
-    void reduceMoney(@PathVariable("token") String token, @PathVariable("id") Long lastMoney);
+    @GetMapping("/user/reduce/{userId}/{lastMoney}")
+    void reduceMoney(@PathVariable("userId") Long userId, @PathVariable("lastMoney") Long lastMoney);
 
 }

@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 @FeignClient("orderservice")
 public interface OrderClient {
 
-    @GetMapping("/order/find/{token}/{id}")
-    int findCount(@PathVariable("token") String token, @PathVariable("id") Long goodsId);
+    @GetMapping("/order/find/{userId}/{id}")
+    int findCount(@PathVariable("userId") Long userId, @PathVariable("id") Long goodsId);
 
 }

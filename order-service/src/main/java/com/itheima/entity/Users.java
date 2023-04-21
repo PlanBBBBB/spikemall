@@ -46,6 +46,11 @@ public class Users implements Serializable {
      */
     private Long money;
 
+    /**
+     * 权限
+     */
+    private String power;
+
     @TableField(exist = false)
     private static final long serialVersionUID = 1L;
 }

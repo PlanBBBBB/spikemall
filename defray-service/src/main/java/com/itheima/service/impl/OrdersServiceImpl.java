@@ -34,11 +34,9 @@ public class OrdersServiceImpl extends ServiceImpl<OrdersMapper, Orders> impleme
     private StringRedisTemplate stringRedisTemplate;
 
     @Override
-    public Result pay(String token, Long orderId) {
+    public Result pay(Long userId, Long orderId) {
         String key = "order:" + orderId;
-        System.out.println(key);
         String orderJson = stringRedisTemplate.opsForValue().get(key);
-        System.out.println(orderJson);
         if (StrUtil.isBlank(orderJson)) {
             return Result.fail("订单号有误");
         }
@@ -57,7 +55,7 @@ public class OrdersServiceImpl extends ServiceImpl<OrdersMapper, Orders> impleme
         }
 
         //余额不足
-        Long money = userClient.getMoney(token);
+        Long money = userClient.getMoney(userId);
         System.out.println("money:" + money);
         Long price = order.getAmount();
         if (money < price) {
@@ -78,7 +76,7 @@ public class OrdersServiceImpl extends ServiceImpl<OrdersMapper, Orders> impleme
 
         //2.扣减用户余额
         long lastMoney = money - price;
-        userClient.reduceMoney(token, lastMoney);
+        userClient.reduceMoney(userId, lastMoney);
 
         //返回订单id
         return Result.ok(order.getId());
