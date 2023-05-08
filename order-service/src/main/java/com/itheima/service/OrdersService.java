@@ -12,7 +12,7 @@ import com.baomidou.mybatisplus.extension.service.IService;
 public interface OrdersService extends IService<Orders> {
     int findCount(Long userId, Long goodsId);
 
-    void saveOrder(Long userId, Long goodsId, Long orderId);
+    void saveOrder(String jwt, Long goodsId, Long orderId);
 
     Result listByUser(Long userId);
 }

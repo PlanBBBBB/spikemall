@@ -4,10 +4,13 @@ package com.itheima.controller;
 import com.itheima.common.Result;
 import com.itheima.entity.Users;
 import com.itheima.service.UsersService;
+import com.itheima.utils.UserToken;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.web.HttpRequestHandler;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
 
 @RestController
 @RequestMapping("/user")
@@ -16,8 +19,6 @@ public class UserController {
 
     @Resource
     private UsersService usersService;
-
-    //TODO 超级管理员有的权限功能
 
 
     /**
@@ -31,35 +32,21 @@ public class UserController {
         return usersService.register(user);
     }
 
-    /**
-     * 登录
-     *
-     * @param user
-     * @return
-     */
-    @PostMapping("/login")
-    public Result login(@RequestBody Users user) {
-        return usersService.login(user);
-    }
-
-
-    /**
-     * 登出
-     *
-     * @return
-     */
-    @PostMapping("/logout")
-    public Result logout() {
-        return usersService.logout();
-    }
 
     /**
      * 获取用户余额（对外不开放）
      *
      * @return
      */
-    @GetMapping("/money/{userId}")
-    public Long getMoney(@PathVariable("userId") Long userId) {
+    @GetMapping("/money")
+    public Long getMoney(HttpServletRequest request) {
+        String jwt = request.getHeader("Authorization");
+        Long userId = null;
+        try {
+            userId = UserToken.getUserIdFromToken(jwt);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         return usersService.getMoney(userId);
     }
 
@@ -68,8 +55,15 @@ public class UserController {
      *
      * @param lastMoney
      */
-    @GetMapping("/reduce/{userId}/{lastMoney}")
-    public void reduceMoney(@PathVariable("userId") Long userId, @PathVariable("lastMoney") Long lastMoney) {
+    @GetMapping("/reduce/{lastMoney}")
+    public void reduceMoney(@PathVariable("lastMoney") Long lastMoney, HttpServletRequest request) {
+        String jwt = request.getHeader("Authorization");
+        Long userId = null;
+        try {
+            userId = UserToken.getUserIdFromToken(jwt);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         usersService.reduceMoney(userId, lastMoney);
     }
 

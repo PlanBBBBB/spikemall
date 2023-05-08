@@ -19,10 +19,10 @@ public class SpikeListener implements RocketMQListener<String> {
     public void onMessage(String message) {
 //        System.out.println(message);
         String[] split = message.split("_");
-        Long userId = Long.valueOf(split[0]);
+        String jwt = split[0];
         Long goodsId = Long.valueOf(split[1]);
         Long orderId = Long.valueOf(split[2]);
-        ordersService.saveOrder(userId, goodsId, orderId);
+        ordersService.saveOrder(jwt, goodsId, orderId);
     }
 
 }

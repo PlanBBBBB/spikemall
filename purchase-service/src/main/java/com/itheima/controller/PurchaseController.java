@@ -21,15 +21,15 @@ public class PurchaseController {
     private RepertoryService repertoryService;
 
     /**
-     * 秒杀商品功能，请求头必须携带token
+     * 秒杀商品功能，请求头必须携带jwt
      *
      * @param goodsId
      * @return
      */
     @PostMapping("/spike/{id}")
     public Result spikeGoods(HttpServletRequest request, @PathVariable("id") Long goodsId) {
-        Long userId = UserToken.getToken(request);
-        return repertoryService.spikeGoods(userId, goodsId);
+        String jwt = request.getHeader("Authorization");
+        return repertoryService.spikeGoods(jwt, goodsId);
     }
 
 }

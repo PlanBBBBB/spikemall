@@ -29,8 +29,8 @@ public class DefrayController {
      */
     @PostMapping("/{orderId}")
     public Result pay(HttpServletRequest request, @PathVariable("orderId") Long orderId) {
-        Long userId = UserToken.getToken(request);
-        return ordersService.pay(userId, orderId);
+        String jwt = request.getHeader("Authorization");
+        return ordersService.pay(jwt, orderId);
     }
 
 }

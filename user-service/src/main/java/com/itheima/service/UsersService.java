@@ -15,9 +15,9 @@ public interface UsersService extends IService<Users> {
 
     void reduceMoney(Long userId, Long lastMoney);
 
-    Result login(Users user);
-
-    Result logout();
+//    Result login(Users user);
+//
+//    Result logout();
 
     Result register(Users user);
 }

@@ -11,7 +11,7 @@ import com.baomidou.mybatisplus.extension.service.IService;
  */
 public interface RepertoryService extends IService<Repertory> {
 
-    Result spikeGoods(Long userId, Long goodsId);
+    Result spikeGoods(String jwt, Long goodsId);
 
-    Result createVoucherOrder(Long userId, Long goodsId);
+    Result createVoucherOrder(String jwt, Long goodsId);
 }

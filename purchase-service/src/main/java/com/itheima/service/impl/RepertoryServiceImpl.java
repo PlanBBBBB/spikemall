@@ -11,6 +11,7 @@ import com.itheima.service.RepertoryService;
 import com.itheima.mapper.RepertoryMapper;
 import com.itheima.utils.RedisIdWorker;
 import com.itheima.utils.SimpleRedisLock;
+import com.itheima.utils.UserToken;
 import org.apache.rocketmq.spring.core.RocketMQTemplate;
 import org.springframework.aop.framework.AopContext;
 import org.springframework.data.redis.core.StringRedisTemplate;
@@ -44,7 +45,14 @@ public class RepertoryServiceImpl extends ServiceImpl<RepertoryMapper, Repertory
     private RedisIdWorker redisIdWorker;
 
     @Override
-    public Result spikeGoods(Long userId, Long goodsId) {
+    public Result spikeGoods(String jwt, Long goodsId) {
+        Long userId;
+        try {
+            userId = UserToken.getUserIdFromToken(jwt);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return Result.fail("解析jwt失败");
+        }
         //判断是否满足时间、库存条件
         Repertory spikeGood = getById(goodsId);
         LocalDateTime beginTime = spikeGood.getBeginTime();
@@ -72,7 +80,7 @@ public class RepertoryServiceImpl extends ServiceImpl<RepertoryMapper, Repertory
         try {
             // 获取代理对象
             RepertoryService proxy = (RepertoryService) AopContext.currentProxy();
-            return proxy.createVoucherOrder(userId,goodsId);
+            return proxy.createVoucherOrder(jwt, goodsId);
         } finally {
             // 释放锁
             redisLock.unlock();
@@ -81,15 +89,14 @@ public class RepertoryServiceImpl extends ServiceImpl<RepertoryMapper, Repertory
 
     @Override
     @Transactional
-    public Result createVoucherOrder(Long userId,Long goodsId) {
+    public Result createVoucherOrder(String jwt, Long goodsId) {
         //一人一单要求
-        int count = orderClient.findCount(userId, goodsId);
+        int count = orderClient.findCount(goodsId, jwt);
         if (count > 0) {
             return Result.fail("该用户以抢购此商品");
         }
-
         //扣减库存
-        boolean success = stockClient.reduceStock(goodsId);
+        boolean success = stockClient.reduceStock(goodsId, jwt);
         if (!success) {
             return Result.fail("该商品已抢购完");
         }
@@ -99,7 +106,7 @@ public class RepertoryServiceImpl extends ServiceImpl<RepertoryMapper, Repertory
 
         //发送普通消息给MQ
         String topic = "Order";
-        String message = userId + "_" + goodsId + "_" + orderId;
+        String message = jwt + "_" + goodsId + "_" + orderId;
         rocketMQTemplate.convertAndSend(topic, message);
 
         //返回订单id

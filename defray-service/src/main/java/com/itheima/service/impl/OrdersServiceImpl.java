@@ -10,6 +10,7 @@ import com.itheima.common.Result;
 import com.itheima.entity.Orders;
 import com.itheima.service.OrdersService;
 import com.itheima.mapper.OrdersMapper;
+import com.itheima.utils.UserToken;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 
@@ -34,7 +35,7 @@ public class OrdersServiceImpl extends ServiceImpl<OrdersMapper, Orders> impleme
     private StringRedisTemplate stringRedisTemplate;
 
     @Override
-    public Result pay(Long userId, Long orderId) {
+    public Result pay(String jwt, Long orderId) {
         String key = "order:" + orderId;
         String orderJson = stringRedisTemplate.opsForValue().get(key);
         if (StrUtil.isBlank(orderJson)) {
@@ -44,23 +45,23 @@ public class OrdersServiceImpl extends ServiceImpl<OrdersMapper, Orders> impleme
         Orders order = JSONUtil.toBean(orderJson, Orders.class);
 
         //下单时间超时
-        LocalDateTime deadlineTime = order.getOrderTime().plusMinutes(20);
+        LocalDateTime deadlineTime = order.getOrderTime().plusMinutes(30);
         LocalDateTime nowTime = LocalDateTime.now();
         if (nowTime.isAfter(deadlineTime)) {
             //回滚库存
-            repertoryClient.rollbackStock(order.getGoodId());
+            repertoryClient.rollbackStock(order.getGoodId(), jwt);
             //删除订单
             removeById(order.getId());
             return Result.fail("下单时间超时");
         }
 
         //余额不足
-        Long money = userClient.getMoney(userId);
-        System.out.println("money:" + money);
+        Long money = userClient.getMoney(jwt);
+
         Long price = order.getAmount();
         if (money < price) {
             //回滚库存
-            repertoryClient.rollbackStock(order.getGoodId());
+            repertoryClient.rollbackStock(order.getGoodId(), jwt);
             //删除订单
             removeById(order.getId());
             return Result.fail("余额不足，无法购买");
@@ -76,7 +77,7 @@ public class OrdersServiceImpl extends ServiceImpl<OrdersMapper, Orders> impleme
 
         //2.扣减用户余额
         long lastMoney = money - price;
-        userClient.reduceMoney(userId, lastMoney);
+        userClient.reduceMoney(lastMoney, jwt);
 
         //返回订单id
         return Result.ok(order.getId());

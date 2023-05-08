@@ -9,6 +9,7 @@ import com.itheima.entity.Orders;
 import com.itheima.entity.Users;
 import com.itheima.service.OrdersService;
 import com.itheima.mapper.OrdersMapper;
+import com.itheima.utils.UserToken;
 import org.apache.rocketmq.common.message.MessageConst;
 import org.apache.rocketmq.spring.core.RocketMQTemplate;
 import org.springframework.data.redis.core.StringRedisTemplate;
@@ -29,9 +30,6 @@ import java.util.List;
 public class OrdersServiceImpl extends ServiceImpl<OrdersMapper, Orders> implements OrdersService {
 
     @Resource
-    private StringRedisTemplate stringRedisTemplate;
-
-    @Resource
     private GoodClient goodClient;
 
     @Resource
@@ -45,8 +43,15 @@ public class OrdersServiceImpl extends ServiceImpl<OrdersMapper, Orders> impleme
     }
 
     @Override
-    public void saveOrder(Long userId, Long goodsId, Long orderId) {
-        Long price = goodClient.getPrice(goodsId);
+    public void saveOrder(String jwt, Long goodsId, Long orderId) {
+        Long userId;
+        try {
+            userId = UserToken.getUserIdFromToken(jwt);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return;
+        }
+        Long price = goodClient.getPrice(goodsId, jwt);
 
         //创建订单
         Orders order = new Orders();
