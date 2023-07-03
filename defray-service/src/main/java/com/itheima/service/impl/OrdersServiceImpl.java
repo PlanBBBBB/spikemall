@@ -10,7 +10,7 @@ import com.itheima.common.Result;
 import com.itheima.entity.Orders;
 import com.itheima.service.OrdersService;
 import com.itheima.mapper.OrdersMapper;
-import com.itheima.utils.UserToken;
+import io.seata.spring.annotation.GlobalTransactional;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 
@@ -35,6 +35,7 @@ public class OrdersServiceImpl extends ServiceImpl<OrdersMapper, Orders> impleme
     private StringRedisTemplate stringRedisTemplate;
 
     @Override
+    @GlobalTransactional
     public Result pay(String jwt, Long orderId) {
         String key = "order:" + orderId;
         String orderJson = stringRedisTemplate.opsForValue().get(key);

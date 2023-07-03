@@ -60,7 +60,7 @@ public class JwtAuthServerConfig extends AuthorizationServerConfigurerAdapter {
     }
 
     @Bean//声明ClientDetails实现
-    public ClientDetailsService clientDetails() {
+    public ClientDetailsService clientDetailsService() {
         JdbcClientDetailsService jdbcClientDetailsService = new JdbcClientDetailsService(dataSource);
         jdbcClientDetailsService.setPasswordEncoder(passwordEncoder);
         return jdbcClientDetailsService;
@@ -68,7 +68,21 @@ public class JwtAuthServerConfig extends AuthorizationServerConfigurerAdapter {
 
     @Override//使用数据库方式客户端存储
     public void configure(ClientDetailsServiceConfigurer clients) throws Exception {
-        clients.withClientDetails(clientDetails());
+        clients.withClientDetails(clientDetailsService());
     }
 
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+

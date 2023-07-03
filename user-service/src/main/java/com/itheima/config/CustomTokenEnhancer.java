@@ -22,7 +22,6 @@ public class CustomTokenEnhancer implements TokenEnhancer {
         Map<String, Object> additionalInfo = new HashMap<>();
         String userId = stringRedisTemplate.opsForValue().get("login");
         stringRedisTemplate.delete("login");
-//        String userId = authentication.getName(); // 获取用户ID
         additionalInfo.put("user_id", userId);
 
         ((DefaultOAuth2AccessToken) accessToken).setAdditionalInformation(additionalInfo);

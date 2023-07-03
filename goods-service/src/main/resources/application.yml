@@ -31,3 +31,18 @@ mybatis-plus:
     log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
 spikemall:
   path: D:\img\
+seata:
+  registry:
+    type: nacos
+    nacos:
+      server-addr: localhost:8848
+      namespace: ""
+      group: DEFAULT_GROUP
+      application: seata-tc-server
+      username: nacos
+      password: nacos
+  tx-service-group: seata-demo # 事务组名称
+  service:
+    vgroup-mapping: # 事务组与cluster的映射关系
+      seata-demo: default
+  data-source-proxy-mode: XA

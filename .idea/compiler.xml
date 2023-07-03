@@ -7,8 +7,8 @@
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
-        <module name="stock-service" />
         <module name="goods-service" />
+        <module name="stock-service" />
         <module name="defray-service" />
         <module name="gateway-service" />
         <module name="purchase-service" />

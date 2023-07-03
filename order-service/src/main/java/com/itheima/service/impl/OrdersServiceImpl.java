@@ -6,16 +6,15 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.itheima.client.GoodClient;
 import com.itheima.common.Result;
 import com.itheima.entity.Orders;
-import com.itheima.entity.Users;
 import com.itheima.service.OrdersService;
 import com.itheima.mapper.OrdersMapper;
 import com.itheima.utils.UserToken;
 import org.apache.rocketmq.common.message.MessageConst;
 import org.apache.rocketmq.spring.core.RocketMQTemplate;
-import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.support.MessageBuilder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import java.time.LocalDateTime;
@@ -36,6 +35,7 @@ public class OrdersServiceImpl extends ServiceImpl<OrdersMapper, Orders> impleme
     private RocketMQTemplate rocketMQTemplate;
 
     @Override
+    @Transactional
     public int findCount(Long userId, Long goodsId) {
         LambdaQueryWrapper<Orders> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.eq(Orders::getGoodId, goodsId).eq(Orders::getUserId, userId);
@@ -43,6 +43,7 @@ public class OrdersServiceImpl extends ServiceImpl<OrdersMapper, Orders> impleme
     }
 
     @Override
+    @Transactional
     public void saveOrder(String jwt, Long goodsId, Long orderId) {
         Long userId;
         try {
@@ -73,6 +74,7 @@ public class OrdersServiceImpl extends ServiceImpl<OrdersMapper, Orders> impleme
     }
 
     @Override
+    @Transactional
     public Result listByUser(Long userId) {
         LambdaQueryWrapper<Orders> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.eq(Orders::getUserId, userId);
@@ -80,7 +82,3 @@ public class OrdersServiceImpl extends ServiceImpl<OrdersMapper, Orders> impleme
         return Result.ok(ordersList);
     }
 }
-
-
-
-

@@ -21,7 +21,7 @@ public class PurchaseController {
     private RepertoryService repertoryService;
 
     /**
-     * 秒杀商品功能，请求头必须携带jwt
+     * 秒杀商品功能，请求头必须携带Authorization
      *
      * @param goodsId
      * @return

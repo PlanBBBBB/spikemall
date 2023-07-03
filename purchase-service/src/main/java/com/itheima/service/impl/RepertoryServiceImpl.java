@@ -1,22 +1,24 @@
 package com.itheima.service.impl;
 
-import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.itheima.client.OrderClient;
 import com.itheima.client.StockClient;
 import com.itheima.common.Result;
 import com.itheima.entity.Repertory;
-import com.itheima.entity.Users;
 import com.itheima.service.RepertoryService;
 import com.itheima.mapper.RepertoryMapper;
 import com.itheima.utils.RedisIdWorker;
 import com.itheima.utils.SimpleRedisLock;
 import com.itheima.utils.UserToken;
+import io.seata.spring.annotation.GlobalTransactional;
+import org.apache.rocketmq.common.message.MessageConst;
 import org.apache.rocketmq.spring.core.RocketMQTemplate;
 import org.springframework.aop.framework.AopContext;
 import org.springframework.data.redis.core.StringRedisTemplate;
+import org.springframework.messaging.Message;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.messaging.support.MessageBuilder;
 
 import javax.annotation.Resource;
 import java.time.LocalDateTime;
@@ -45,6 +47,7 @@ public class RepertoryServiceImpl extends ServiceImpl<RepertoryMapper, Repertory
     private RedisIdWorker redisIdWorker;
 
     @Override
+    @GlobalTransactional
     public Result spikeGoods(String jwt, Long goodsId) {
         Long userId;
         try {
@@ -106,8 +109,11 @@ public class RepertoryServiceImpl extends ServiceImpl<RepertoryMapper, Repertory
 
         //发送普通消息给MQ
         String topic = "Order";
-        String message = jwt + "_" + goodsId + "_" + orderId;
-        rocketMQTemplate.convertAndSend(topic, message);
+        String content = jwt + "=" + goodsId + "=" + orderId;
+
+        Message<String> message = MessageBuilder.withPayload(content).build();
+//        rocketMQTemplate.sendMessageInTransaction("purchase_producer", message, null);
+        rocketMQTemplate.convertAndSend(topic, content);
 
         //返回订单id
         return Result.ok(orderId);

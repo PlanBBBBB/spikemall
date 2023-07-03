@@ -29,3 +29,18 @@ mybatis-plus:
     #在映射实体或者属性时，将数据库中表名和字段名中的下划线去掉，按照驼峰命名法映射
     map-underscore-to-camel-case: true
     log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+seata:
+  registry:
+    type: nacos
+    nacos:
+      server-addr: localhost:8848
+      namespace: ""
+      group: DEFAULT_GROUP
+      application: seata-tc-server
+      username: nacos
+      password: nacos
+  tx-service-group: seata-demo # 事务组名称
+  service:
+    vgroup-mapping: # 事务组与cluster的映射关系
+      seata-demo: default
+  data-source-proxy-mode: XA

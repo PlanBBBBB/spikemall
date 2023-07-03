@@ -20,6 +20,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import java.util.ArrayList;
@@ -36,6 +37,7 @@ import java.util.concurrent.TimeUnit;
 public class UsersServiceImpl extends ServiceImpl<UsersMapper, Users> implements UsersService {
 
     @Override
+    @Transactional
     public Result register(Users user) {
         String phone = user.getPhone();
         String password = user.getPassword();
@@ -76,44 +78,15 @@ public class UsersServiceImpl extends ServiceImpl<UsersMapper, Users> implements
     }
 
 
-//    @Override
-//    public Result login(Users user) {
-//        UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(user.getPhone(), user.getPassword());
-//        Authentication authenticate = authenticationManager.authenticate(authenticationToken);
-//        if (Objects.isNull(authenticate)) {
-//            return Result.fail("手机号或密码错误");
-//        }
-//        //使用userId生成token
-//        LoginUser loginUser = (LoginUser) authenticate.getPrincipal();
-//        user = loginUser.getUser();
-//        String userId = user.getId().toString();
-//        String jwt = JwtUtil.createJWT(userId);
-//
-//        String loginUserJson = JSONUtil.toJsonStr(loginUser);
-//        //authenticate存入redis
-//        stringRedisTemplate.opsForValue().set("login:" + userId, loginUserJson);
-//
-//        //把token响应给前端
-//        return Result.ok(jwt);
-//    }
-
-//    @Override
-//    public Result logout() {
-//        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-//        LoginUser loginUser = (LoginUser) authentication.getPrincipal();
-//        Long userId = loginUser.getUser().getId();
-//        stringRedisTemplate.delete("login:" + userId);
-//        return Result.ok("登出成功");
-//    }
-
-
     @Override
+    @Transactional
     public Long getMoney(Long userId) {
         Users user = getById(userId);
         return user.getMoney();
     }
 
     @Override
+    @Transactional
     public void reduceMoney(Long userId, Long lastMoney) {
         LambdaUpdateWrapper<Users> updateWrapper = new LambdaUpdateWrapper<>();
         updateWrapper.eq(Users::getId, userId)

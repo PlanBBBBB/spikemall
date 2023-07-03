@@ -2,6 +2,7 @@ package com.itheima.controller;
 
 import com.itheima.common.Result;
 import com.itheima.entity.Goods;
+import com.itheima.mapper.GoodsMapper;
 import com.itheima.service.GoodsService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
@@ -15,6 +16,8 @@ public class GoodController {
 
     @Resource
     private GoodsService goodsService;
+    @Resource
+    private GoodsMapper goodsMapper;
 
     /**
      * 查看商品列表
@@ -34,45 +37,18 @@ public class GoodController {
      */
     @GetMapping("/get/{id}")
     public Long getPrice(@PathVariable("id") Long goodsId) {
-        return goodsService.getById(goodsId).getPrice();
+        return goodsService.getPrcie(goodsId);
     }
 
-
     /**
-     * 添加商品（仅管理员可用）
-     *
-     * @param good
-     * @return
-     */
-    @PostMapping("/save")
-    public Result save(@RequestBody Goods good) {
-        return goodsService.saveGood(good);
-    }
-
-
-    /**
-     * 删除商品（仅管理员可用）
+     * 通过商品id查询商品(对外不开放)
      *
      * @param goodsId
      * @return
      */
-    @PostMapping("/delete/{goodsId}")
-    public Result delete(@PathVariable Long goodsId) {
-        goodsService.removeById(goodsId);
-        return Result.ok();
-    }
-
-
-    /**
-     * 修改商品（仅管理员可用）
-     *
-     * @param good
-     * @return
-     */
-    @PostMapping("/update")
-    public Result update(@RequestBody Goods good) {
-        goodsService.updateById(good);
-        return Result.ok();
+    @PostMapping("/get/{id}")
+    public Result getGoods(@PathVariable("id") Long goodsId) {
+        return goodsService.getGoods(goodsId);
     }
 
 }

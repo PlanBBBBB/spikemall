@@ -6,6 +6,7 @@ import com.itheima.entity.Repertory;
 import com.itheima.service.RepertoryService;
 import com.itheima.mapper.RepertoryMapper;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * @author 86139
@@ -16,6 +17,7 @@ import org.springframework.stereotype.Service;
 public class RepertoryServiceImpl extends ServiceImpl<RepertoryMapper, Repertory> implements RepertoryService {
 
     @Override
+    @Transactional
     public boolean reduceStock(Long goodsId) {
         LambdaUpdateWrapper<Repertory> updateWrapper = new LambdaUpdateWrapper<>();
         updateWrapper.eq(Repertory::getGoodsId, goodsId)
@@ -25,6 +27,7 @@ public class RepertoryServiceImpl extends ServiceImpl<RepertoryMapper, Repertory
     }
 
     @Override
+    @Transactional
     public void rollbackStock(Long goodsId) {
         LambdaUpdateWrapper<Repertory> updateWrapper = new LambdaUpdateWrapper<>();
         updateWrapper.eq(Repertory::getGoodsId, goodsId)
