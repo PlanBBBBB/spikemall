@@ -12,7 +12,7 @@ import com.baomidou.mybatisplus.extension.service.IService;
 public interface GoodsService extends IService<Goods> {
     Result listByRedis();
 
-    Long getPrcie(Long goodsId);
+    Long getPrice(Long goodsId);
 
     Result getGoods(Long goodsId);
 }

@@ -52,7 +52,7 @@ public class GoodsServiceImpl extends ServiceImpl<GoodsMapper, Goods> implements
     }
 
     @Override
-    public Long getPrcie(Long goodsId) {
+    public Long getPrice(Long goodsId) {
         Result result = getGoods(goodsId);
         if (result.getSuccess()) {
             Goods goods = (Goods) result.getData();

@@ -37,7 +37,7 @@ public class GoodController {
      */
     @GetMapping("/get/{id}")
     public Long getPrice(@PathVariable("id") Long goodsId) {
-        return goodsService.getPrcie(goodsId);
+        return goodsService.getPrice(goodsId);
     }
 
     /**
