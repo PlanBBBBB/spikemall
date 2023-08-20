@@ -13,5 +13,8 @@ public interface RepertoryService extends IService<Repertory> {
 
     Result spikeGoods(String jwt, Long goodsId);
 
-    Result createVoucherOrder(String jwt, Long goodsId);
+    void createVoucherOrder(String jwt, Long goodsId);
+
+    void afterPurchase(String jwt, Long goodsId);
+
 }

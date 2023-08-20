@@ -1,5 +1,6 @@
 package com.itheima.controller;
 
+import com.itheima.common.Result;
 import com.itheima.service.RepertoryService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
@@ -36,5 +37,10 @@ public class StockController {
         repertoryService.rollbackStock(goodsId);
     }
 
+
+    @GetMapping("/warmup")
+    public Result warmup() {
+        return repertoryService.warmup();
+    }
 
 }

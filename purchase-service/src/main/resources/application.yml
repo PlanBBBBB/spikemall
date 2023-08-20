@@ -36,6 +36,8 @@ rocketmq:
   name-server: localhost:9876
   producer:
     group: purchase_producer
+  consumer:
+    group: purchase_consumer
 feign:
   sentinel:
     enabled: true #开始feign的sentinel功能

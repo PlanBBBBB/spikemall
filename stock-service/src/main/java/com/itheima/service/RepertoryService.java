@@ -1,5 +1,6 @@
 package com.itheima.service;
 
+import com.itheima.common.Result;
 import com.itheima.entity.Repertory;
 import com.baomidou.mybatisplus.extension.service.IService;
 
@@ -13,4 +14,7 @@ public interface RepertoryService extends IService<Repertory> {
     boolean reduceStock(Long goodsId);
 
     void rollbackStock(Long goodsId);
+
+    Result warmup();
+
 }
