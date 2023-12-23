@@ -8,7 +8,7 @@ spring:
       driver-class-name: com.mysql.jdbc.Driver
       url: jdbc:mysql://localhost:3306/spikemall_orders?useSSL=false
       username: root
-      password: hsp
+      password: root
   redis:
     host: localhost
     port: 6379
