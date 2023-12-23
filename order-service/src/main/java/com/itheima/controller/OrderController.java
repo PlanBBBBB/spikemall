@@ -1,7 +1,6 @@
 package com.itheima.controller;
 
 import com.itheima.common.Result;
-import com.itheima.entity.Orders;
 import com.itheima.service.OrdersService;
 import com.itheima.utils.UserToken;
 import lombok.extern.slf4j.Slf4j;
@@ -9,7 +8,6 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
-import java.util.List;
 
 @RestController
 @RequestMapping("/order")

@@ -6,6 +6,13 @@ local userId = ARGV[2]
 local stockKey = 'seckill:stock:' .. goodsId
 -- 订单key
 local orderKey = 'seckill:order:' .. goodsId
+
+-- 判断库存是否存在
+local stockExists = redis.call('exists', stockKey)
+if stockExists == 0 then
+    return 3  -- 库存不存在的情况
+end
+
 -- 判断库存是否充足
 if (tonumber(redis.call('get', stockKey)) <= 0) then
     return 1

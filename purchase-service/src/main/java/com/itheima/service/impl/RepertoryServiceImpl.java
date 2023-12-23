@@ -78,7 +78,11 @@ public class RepertoryServiceImpl extends ServiceImpl<RepertoryMapper, Repertory
                 userId.toString());
         //判断返回值，并返回错误信息
         if (result.intValue() != 0) {
-            return Result.fail(result.intValue() == 1 ? "库存不足" : "不能重复下单");
+            if (result.intValue() == 1) {
+                return Result.fail("库存不足");
+            } else if (result.intValue() == 2) {
+                return Result.fail("不能重复下单");
+            } else return Result.fail("库存未加载");
         }
         orderId = redisIdWorker.nextId("order");
 

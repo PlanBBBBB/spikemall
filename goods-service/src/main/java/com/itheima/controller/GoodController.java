@@ -1,7 +1,6 @@
 package com.itheima.controller;
 
 import com.itheima.common.Result;
-import com.itheima.entity.Goods;
 import com.itheima.mapper.GoodsMapper;
 import com.itheima.service.GoodsService;
 import lombok.extern.slf4j.Slf4j;

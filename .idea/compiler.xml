@@ -9,6 +9,7 @@
         <outputRelativeToContentRoot value="true" />
         <module name="goods-service" />
         <module name="stock-service" />
+        <module name="common" />
         <module name="defray-service" />
         <module name="gateway-service" />
         <module name="purchase-service" />
@@ -19,6 +20,7 @@
   </component>
   <component name="JavacSettings">
     <option name="ADDITIONAL_OPTIONS_OVERRIDE">
+      <module name="common" options="-parameters" />
       <module name="defray-service" options="-parameters" />
       <module name="gateway-service" options="-parameters" />
       <module name="goods-service" options="-parameters" />

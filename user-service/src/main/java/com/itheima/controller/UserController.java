@@ -6,7 +6,6 @@ import com.itheima.entity.Users;
 import com.itheima.service.UsersService;
 import com.itheima.utils.UserToken;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.web.HttpRequestHandler;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;

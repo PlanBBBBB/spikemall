@@ -15,6 +15,7 @@
         <module>purchase-service</module>
         <module>order-service</module>
         <module>defray-service</module>
+        <module>common</module>
     </modules>
 
     <packaging>pom</packaging>

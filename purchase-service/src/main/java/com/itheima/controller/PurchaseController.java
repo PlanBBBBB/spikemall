@@ -2,7 +2,6 @@ package com.itheima.controller;
 
 import com.itheima.common.Result;
 import com.itheima.service.RepertoryService;
-import com.itheima.utils.UserToken;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
