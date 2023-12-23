@@ -1,7 +1,6 @@
 package com.itheima.service.impl;
 
 import cn.hutool.core.lang.UUID;
-import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -10,12 +9,11 @@ import com.itheima.entity.Users;
 import com.itheima.service.UsersService;
 import com.itheima.mapper.UsersMapper;
 import com.itheima.utils.Regex.RegexUtils;
-import org.springframework.data.redis.core.StringRedisTemplate;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import javax.annotation.Resource;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 /**
  * @author 86139
@@ -25,45 +23,8 @@ import java.util.concurrent.TimeUnit;
 @Service
 public class UsersServiceImpl extends ServiceImpl<UsersMapper, Users> implements UsersService {
 
-    @Resource
-    private StringRedisTemplate stringRedisTemplate;
-
     @Override
-    public Result login(Users user) {
-        String phone = user.getPhone();
-        String password = user.getPassword();
-        if (RegexUtils.isPhoneInvalid(phone)) {
-            //手机号格式错误
-            return Result.fail("手机号格式不正确");
-        }
-        if (RegexUtils.isPasswordInvalid(password)) {
-            //密码格式错误
-            return Result.fail("密码格式不正确");
-        }
-        Users QueryUser = query().eq("phone", phone).one();
-        if (QueryUser != null && !QueryUser.getPassword().equals(password)) {
-            //存在用户，密码错误退出
-            return Result.fail("密码错误，请重试!");
-        }
-        //不存在则退出
-        if (QueryUser == null) {
-            return Result.fail("用户不存在");
-        }
-
-        //将用户信息存入redis
-        String token = UUID.randomUUID(true).toString(true);
-        String tokenKey = "login:user" + token;
-
-        String userJson = JSONUtil.toJsonStr(QueryUser);
-        stringRedisTemplate.opsForValue().set(tokenKey, userJson);
-
-        //设置有效期
-        stringRedisTemplate.expire(tokenKey, 30, TimeUnit.MINUTES);
-        return Result.ok(token);
-    }
-
-
-    @Override
+    @Transactional
     public Result register(Users user) {
         String phone = user.getPhone();
         String password = user.getPassword();
@@ -85,8 +46,12 @@ public class UsersServiceImpl extends ServiceImpl<UsersMapper, Users> implements
         }
         Users newUser = new Users();
         newUser.setPhone(user.getPhone());
-        newUser.setPassword(user.getPassword());
+        //密码设置为加密形式
+        BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+        String encode = passwordEncoder.encode(password);
+        newUser.setPassword(encode);
         newUser.setMoney(200L);//新用户送200
+        newUser.setPower("consumer");
         if (user.getName() == null) {
             newUser.setName("user_" + UUID.randomUUID(true).toString());
         } else {
@@ -100,48 +65,16 @@ public class UsersServiceImpl extends ServiceImpl<UsersMapper, Users> implements
     }
 
 
-    /**
-     * 请求头带上authorization携带的token
-     *
-     * @return
-     */
     @Override
-    public Result check(String token) {
-        //从缓存中获取user对象
-        String tokenKey = "login:user" + token;
-        String userJson = stringRedisTemplate.opsForValue().get(tokenKey);
-        Users user = JSONUtil.toBean(userJson, Users.class);
-        return Result.ok(user);
-    }
-
-    /**
-     * 请求头带上authorization携带的token
-     *
-     * @return
-     */
-    @Override
-    public Result logout(String token) {
-        //删除缓存
-        String tokenKey = "login:user" + token;
-        stringRedisTemplate.delete(tokenKey);
-        return Result.ok();
-    }
-
-
-    @Override
-    public Long getMoney(String token) {
-        String tokenKey = "login:user" + token;
-        String userJson = stringRedisTemplate.opsForValue().get(tokenKey);
-        Users user = JSONUtil.toBean(userJson, Users.class);
+    @Transactional
+    public Long getMoney(Long userId) {
+        Users user = getById(userId);
         return user.getMoney();
     }
 
     @Override
-    public void reduceMoney(String token, Long lastMoney) {
-        String tokenKey = "login:user" + token;
-        String userJson = stringRedisTemplate.opsForValue().get(tokenKey);
-        Users user = JSONUtil.toBean(userJson, Users.class);
-        Long userId = user.getId();
+    @Transactional
+    public void reduceMoney(Long userId, Long lastMoney) {
         LambdaUpdateWrapper<Users> updateWrapper = new LambdaUpdateWrapper<>();
         updateWrapper.eq(Users::getId, userId)
                 .set(Users::getMoney, lastMoney);

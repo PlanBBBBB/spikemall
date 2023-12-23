@@ -24,6 +24,9 @@ spring:
   cloud:
     nacos:
       server-addr: localhost:8848
+    sentinel:
+      transport:
+        dashboard: localhost:8090
 mybatis-plus:
   configuration:
     #在映射实体或者属性时，将数据库中表名和字段名中的下划线去掉，按照驼峰命名法映射
@@ -33,3 +36,23 @@ rocketmq:
   name-server: localhost:9876
   producer:
     group: purchase_producer
+  consumer:
+    group: purchase_consumer
+feign:
+  sentinel:
+    enabled: true #开始feign的sentinel功能
+seata:
+  registry:
+    type: nacos
+    nacos:
+      server-addr: localhost:8848
+      namespace: ""
+      group: DEFAULT_GROUP
+      application: seata-tc-server
+      username: nacos
+      password: nacos
+  tx-service-group: seata-demo # 事务组名称
+  service:
+    vgroup-mapping: # 事务组与cluster的映射关系
+      seata-demo: default
+  data-source-proxy-mode: XA

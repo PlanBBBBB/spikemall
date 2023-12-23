@@ -11,5 +11,5 @@ import com.baomidou.mybatisplus.extension.service.IService;
 */
 public interface OrdersService extends IService<Orders> {
 
-    Result pay(String token, Long orderId);
+    Result pay(String jwt, Long orderId);
 }

@@ -1,12 +1,10 @@
 package com.itheima.controller;
 
 import com.itheima.common.Result;
+import com.itheima.mapper.GoodsMapper;
 import com.itheima.service.GoodsService;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 
@@ -17,6 +15,8 @@ public class GoodController {
 
     @Resource
     private GoodsService goodsService;
+    @Resource
+    private GoodsMapper goodsMapper;
 
     /**
      * 查看商品列表
@@ -34,9 +34,20 @@ public class GoodController {
      * @param goodsId
      * @return
      */
-    @GetMapping("/{id}")
+    @GetMapping("/get/{id}")
     public Long getPrice(@PathVariable("id") Long goodsId) {
-        return goodsService.getById(goodsId).getPrice();
+        return goodsService.getPrice(goodsId);
+    }
+
+    /**
+     * 通过商品id查询商品(对外不开放)
+     *
+     * @param goodsId
+     * @return
+     */
+    @PostMapping("/get/{id}")
+    public Result getGoods(@PathVariable("id") Long goodsId) {
+        return goodsService.getGoods(goodsId);
     }
 
 }

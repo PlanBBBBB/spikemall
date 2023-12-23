@@ -10,15 +10,14 @@ import com.baomidou.mybatisplus.extension.service.IService;
 * @createDate 2023-04-15 15:55:14
 */
 public interface UsersService extends IService<Users> {
-    Long getMoney(String token);
 
-    void reduceMoney(String token, Long lastMoney);
+    Long getMoney(Long userId);
 
-    Result login(Users user);
+    void reduceMoney(Long userId, Long lastMoney);
 
-    Result check(String token);
-
-    Result logout(String token);
+//    Result login(Users user);
+//
+//    Result logout();
 
     Result register(Users user);
 }

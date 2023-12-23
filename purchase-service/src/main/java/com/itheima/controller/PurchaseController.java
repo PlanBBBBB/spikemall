@@ -2,7 +2,6 @@ package com.itheima.controller;
 
 import com.itheima.common.Result;
 import com.itheima.service.RepertoryService;
-import com.itheima.utils.UserToken;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -21,15 +20,15 @@ public class PurchaseController {
     private RepertoryService repertoryService;
 
     /**
-     * 秒杀商品功能，请求头必须携带token
+     * 秒杀商品功能，请求头必须携带Authorization
      *
      * @param goodsId
      * @return
      */
     @PostMapping("/spike/{id}")
     public Result spikeGoods(HttpServletRequest request, @PathVariable("id") Long goodsId) {
-        String token = UserToken.getToken(request);
-        return repertoryService.spikeGoods(token, goodsId);
+        String jwt = request.getHeader("Authorization");
+        return repertoryService.spikeGoods(jwt, goodsId);
     }
 
 }

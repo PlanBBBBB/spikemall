@@ -4,10 +4,7 @@ import com.itheima.common.Result;
 import com.itheima.service.OrdersService;
 import com.itheima.utils.UserToken;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
@@ -26,21 +23,34 @@ public class OrderController {
      * @param goodsId
      * @return
      */
-    @GetMapping("/find/{token}/{id}")
-    public int findCount(@PathVariable("token") String token, @PathVariable("id") Long goodsId) {
-        return ordersService.findCount(token, goodsId);
+    @GetMapping("/find/{goodsId}")
+    public int findCount(HttpServletRequest request, @PathVariable("goodsId") Long goodsId) {
+        String jwt = request.getHeader("Authorization");
+        Long userId = null;
+        try {
+            userId = UserToken.getUserIdFromToken(jwt);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return ordersService.findCount(userId, goodsId);
     }
 
 
     /**
-     * 查看当前用户的所有订单,请求头必须携带token
+     * 查看当前用户的所有订单,请求头必须携带jwt
      *
      * @return
      */
     @GetMapping("/list")
-    public Result list(HttpServletRequest request) {
-        String token = UserToken.getToken(request);
-        return ordersService.listByUser(token);
+    public Result listByUser(HttpServletRequest request) {
+        String jwt = request.getHeader("Authorization");
+        Long userId = null;
+        try {
+            userId = UserToken.getUserIdFromToken(jwt);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return ordersService.listByUser(userId);
     }
 
 }

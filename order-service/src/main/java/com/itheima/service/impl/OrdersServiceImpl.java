@@ -6,15 +6,15 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.itheima.client.GoodClient;
 import com.itheima.common.Result;
 import com.itheima.entity.Orders;
-import com.itheima.entity.Users;
 import com.itheima.service.OrdersService;
 import com.itheima.mapper.OrdersMapper;
+import com.itheima.utils.UserToken;
 import org.apache.rocketmq.common.message.MessageConst;
 import org.apache.rocketmq.spring.core.RocketMQTemplate;
-import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.support.MessageBuilder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import java.time.LocalDateTime;
@@ -29,34 +29,30 @@ import java.util.List;
 public class OrdersServiceImpl extends ServiceImpl<OrdersMapper, Orders> implements OrdersService {
 
     @Resource
-    private StringRedisTemplate stringRedisTemplate;
-
-    @Resource
     private GoodClient goodClient;
 
     @Resource
     private RocketMQTemplate rocketMQTemplate;
 
     @Override
-    public int findCount(String token, Long goodsId) {
-        String tokenKey = "login:user" + token;
-        String userJson = stringRedisTemplate.opsForValue().get(tokenKey);
-        Users user = JSONUtil.toBean(userJson, Users.class);
-
-        Long userId = user.getId();
+    @Transactional
+    public int findCount(Long userId, Long goodsId) {
         LambdaQueryWrapper<Orders> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.eq(Orders::getGoodId, goodsId).eq(Orders::getUserId, userId);
         return count(queryWrapper);
     }
 
     @Override
-    public void saveOrder(String token, Long goodsId, Long orderId) {
-        String tokenKey = "login:user" + token;
-        String userJson = stringRedisTemplate.opsForValue().get(tokenKey);
-        Users user = JSONUtil.toBean(userJson, Users.class);
-
-        Long price = goodClient.getPrice(goodsId);
-        Long userId = user.getId();
+    @Transactional
+    public void saveOrder(String jwt, Long goodsId, Long orderId) {
+        Long userId;
+        try {
+            userId = UserToken.getUserIdFromToken(jwt);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return;
+        }
+        Long price = goodClient.getPrice(goodsId, jwt);
 
         //创建订单
         Orders order = new Orders();
@@ -78,19 +74,11 @@ public class OrdersServiceImpl extends ServiceImpl<OrdersMapper, Orders> impleme
     }
 
     @Override
-    public Result listByUser(String token) {
-        String tokenKey = "login:user" + token;
-        String userJson = stringRedisTemplate.opsForValue().get(tokenKey);
-        Users user = JSONUtil.toBean(userJson, Users.class);
-        Long userId = user.getId();
-
+    @Transactional
+    public Result listByUser(Long userId) {
         LambdaQueryWrapper<Orders> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.eq(Orders::getUserId, userId);
         List<Orders> ordersList = list(queryWrapper);
         return Result.ok(ordersList);
     }
 }
-
-
-
-

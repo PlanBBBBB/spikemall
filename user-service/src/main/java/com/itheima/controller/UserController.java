@@ -31,48 +31,22 @@ public class UserController {
         return usersService.register(user);
     }
 
-    /**
-     * 登录
-     *
-     * @param user
-     * @return
-     */
-    @PostMapping("/login")
-    public Result login(@RequestBody Users user) {
-        return usersService.login(user);
-    }
-
-
-    /**
-     * 校验
-     *
-     * @return
-     */
-    @GetMapping("/check")
-    public Result check(HttpServletRequest request) {
-        String token = UserToken.getToken(request);
-        return usersService.check(token);
-    }
-
-    /**
-     * 登出
-     *
-     * @return
-     */
-    @PostMapping("/logout")
-    public Result logout(HttpServletRequest request) {
-        String token = UserToken.getToken(request);
-        return usersService.logout(token);
-    }
 
     /**
      * 获取用户余额（对外不开放）
      *
      * @return
      */
-    @GetMapping("/money/{token}")
-    public Long getMoney(@PathVariable("token") String token) {
-        return usersService.getMoney(token);
+    @GetMapping("/money")
+    public Long getMoney(HttpServletRequest request) {
+        String jwt = request.getHeader("Authorization");
+        Long userId = null;
+        try {
+            userId = UserToken.getUserIdFromToken(jwt);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return usersService.getMoney(userId);
     }
 
     /**
@@ -80,9 +54,16 @@ public class UserController {
      *
      * @param lastMoney
      */
-    @GetMapping("/reduce/{token}/{id}")
-    public void reduceMoney(@PathVariable("token") String token, @PathVariable("id") Long lastMoney) {
-        usersService.reduceMoney(token, lastMoney);
+    @GetMapping("/reduce/{lastMoney}")
+    public void reduceMoney(@PathVariable("lastMoney") Long lastMoney, HttpServletRequest request) {
+        String jwt = request.getHeader("Authorization");
+        Long userId = null;
+        try {
+            userId = UserToken.getUserIdFromToken(jwt);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        usersService.reduceMoney(userId, lastMoney);
     }
 
 }

@@ -10,9 +10,9 @@ import com.baomidou.mybatisplus.extension.service.IService;
  * @createDate 2023-04-15 17:25:23
  */
 public interface OrdersService extends IService<Orders> {
-    int findCount(String token, Long goodsId);
+    int findCount(Long userId, Long goodsId);
 
-    void saveOrder(String token, Long goodsId, Long orderId);
+    void saveOrder(String jwt, Long goodsId, Long orderId);
 
-    Result listByUser(String token);
+    Result listByUser(Long userId);
 }
