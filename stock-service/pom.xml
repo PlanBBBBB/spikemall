@@ -53,12 +53,6 @@
             <artifactId>mybatis-plus-boot-starter</artifactId>
             <version>3.4.2</version>
         </dependency>
-        <!--hutool-->
-        <dependency>
-            <groupId>cn.hutool</groupId>
-            <artifactId>hutool-all</artifactId>
-            <version>5.7.17</version>
-        </dependency>
 
         <!--redis-->
         <dependency>
@@ -79,7 +73,6 @@
             <artifactId>commons-pool2</artifactId>
         </dependency>
 
-
         <!--security-->
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -89,12 +82,6 @@
             <groupId>org.springframework.security</groupId>
             <artifactId>spring-security-test</artifactId>
             <scope>test</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>io.jsonwebtoken</groupId>
-            <artifactId>jjwt</artifactId>
-            <version>0.9.0</version>
         </dependency>
 
         <dependency>
