@@ -4,8 +4,6 @@
 
 本项目名为下单秒杀项目，主要实现了用户进行下单秒杀的服务，用户对商品进行下单，会有一系列的关于订单，库存，账户等的操作，用户进行支付也会有对应订单，库存，账户等的操作，其次作为一个完善的商城，该项目同样也包含了用户的注册，登录，登出，以及对商品进行查看等的功能。
 
-![image-20230527103920081](./assets/image-20230527103920081.png)
-
 ## 相关技术栈
 
 该项目主要使用了`springboot`，`mybatis-plus`，`springcloud`，`nacos`，`feign`，`rocketmq`，`redis`，`gateway`，`springsecurity`，`Sentinel`，`Seata`等技术。
@@ -135,28 +133,12 @@ seata-server.bat
 
 1. 在浏览器输入[http://localhost:8085](http://localhost:8085)会自动跳转到[http://localhost:8085/login](http://localhost:8085/login)，在表单中填写手机号和密码进行登录。
 
-
-进入如下界面代表登录成功
-
-![image-20230527101318752](./assets/image-20230527101318752.png)
-
-2. 在浏览器中输入该网址[http://localhost:8085/oauth/authorize?client_id=client&response_type=code&redirect_uri=http://www.baidu.com](http://localhost:8085/oauth/authorize?client_id=client&response_type=code&redirect_uri=http://www.baidu.com)，跳转到百度首页之后，在上面url处找到授权码
-
-![image-20230527101354324](./assets/image-20230527101354324.png)
-
-点击Authorize进行授权
-
-![image-20230527101451035](./assets/image-20230527101451035.png)
-
-得到授权码
+2. 在浏览器中输入该网址[http://localhost:8085/oauth/authorize?client_id=client&response_type=code&redirect_uri=http://www.baidu.com](http://localhost:8085/oauth/authorize?client_id=client&response_type=code&redirect_uri=http://www.baidu.com)，跳转到百度首页之后，在上面url处找到授权码，点击Authorize进行授权，得到授权码
 
 3. 将得到的授权码代入到以下url地址中，此处用postman进行操作：[http://client:secret@localhost:8085/oauth/token?grant_type=authorization_code&code=prgYij&redirect_uri=http://www.baidu.com](http://client:secret@localhost:8085/oauth/token?grant_type=authorization_code&code=prgYij&redirect_uri=http://www.baidu.com)
 
-![image-20230527101535264](./assets/image-20230527101535264.png)
+4. 携带授权码，得到`access_token`，该`access_token`在前面拼接上`Bearer `即为jwt令牌。
 
-携带授权码，得到`access_token`，该`access_token`在前面拼接上`Bearer `即为jwt令牌。
-
-#### 代码实现
 
 因为本身使用的就是springsecurity整合好的安全框架，故只是对认证授权服务器和资源服务器做了一系列的配置而已。
 

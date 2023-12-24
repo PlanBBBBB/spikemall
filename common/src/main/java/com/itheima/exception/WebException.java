@@ -1,5 +1,6 @@
-package com.itheima.common;
+package com.itheima.exception;
 
+import com.itheima.common.Result;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
